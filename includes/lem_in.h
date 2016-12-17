@@ -37,6 +37,7 @@ typedef struct	s_graph
 	int		*s;
 	int		*aq;
 	int		*as;
+	int		*ar;
 }				t_graph;
 
 #endif

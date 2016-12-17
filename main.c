@@ -229,9 +229,9 @@ int		ft_read(int i, t_graph *afarm, t_list *list)
 	afarm->s = (int*)malloc(sizeof(int) * afarm->rnum);
 	afarm->aq = (int*)malloc(sizeof(int) * afarm->rnum);
 	afarm->as = (int*)malloc(sizeof(int) * afarm->rnum);
+	afarm->ar = (int*)malloc(sizeof(int) * afarm->anum);
 	afarm->rnames = (char**)malloc(sizeof(char*) * (afarm->rnum + 1));
 	(afarm->rnames)[afarm->rnum] = 0;
-	i = -1;
 	while (++i < afarm->rnum && (j = -1))
 	{
 		(afarm->w_matx)[i] = (int*)malloc(sizeof(int) * afarm->rnum);
@@ -245,7 +245,10 @@ int		ft_read(int i, t_graph *afarm, t_list *list)
 	}
 	(afarm->s)[afarm->start] = afarm->start;
 	afarm->d_matx[afarm->start] = 0;
-	(afarm->as)[i] = afarm->anum;
+	(afarm->as)[afarm->start] = afarm->anum;
+	i = -1;
+	while (++i < afarm->anum)
+		ar[i] = afarm->start;
 	i = -1;
 	// printf("TEST: reading\n");
 	while (list)
