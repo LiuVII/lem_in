@@ -53,15 +53,20 @@ void	ft_clear_farm(t_graph *afarm)
 		free((afarm->w_matx)[i]);
 	}
 	free(afarm->rnames);
-	free(afarm->w_matx);	
+	free(afarm->w_matx);
 	free(afarm->d_matx);
 	free(afarm->q);
 	free(afarm->s);
+	free(afarm->as);
+	free(afarm->aq);
+	free(afarm->acr);
+	free(afarm->anr);
 }
 
 
 void	ft_free_n_exit(char *line, t_list **list, int err)
 {
+	printf("Error func start with code: %d\n", err);
 	(line) ? free(line) : 0;
 	(list && *list) ? ft_lstclr(list) : 0;
 	if (err)
@@ -188,7 +193,7 @@ void	ft_read_to_list(t_list **list, int ret, int flag, t_graph *afarm)
 	}
 	tmp->next = NULL;
 	free(line);
-	(ret == -1) ? ft_free_n_exit(line, list, -4) : 0;
+	(ret == -1) ? ft_free_n_exit(NULL, list, -4) : 0;
 }
 
 int		ft_rec_bond(t_list *list, t_graph *afarm, int i, int j)
@@ -229,26 +234,16 @@ int		ft_read(int i, t_graph *afarm, t_list *list)
 	afarm->s = (int*)malloc(sizeof(int) * afarm->rnum);
 	afarm->aq = (int*)malloc(sizeof(int) * afarm->rnum);
 	afarm->as = (int*)malloc(sizeof(int) * afarm->rnum);
-	afarm->ar = (int*)malloc(sizeof(int) * afarm->anum);
 	afarm->rnames = (char**)malloc(sizeof(char*) * (afarm->rnum + 1));
 	(afarm->rnames)[afarm->rnum] = 0;
 	while (++i < afarm->rnum && (j = -1))
 	{
 		(afarm->w_matx)[i] = (int*)malloc(sizeof(int) * afarm->rnum);
-		(afarm->q)[i] = i;
-		(afarm->s)[i] = -1;
-		afarm->d_matx[i] = afarm->rnum + afarm->anum + 1;
-		(afarm->aq)[i] = 0;		
-		(afarm->as)[i] = 0;	
+		(afarm->aq)[i] = 0;
+		(afarm->as)[i] = 0;
 		while (++j < afarm->rnum)
 			(afarm->w_matx)[i][j] = 0;
 	}
-	(afarm->s)[afarm->start] = afarm->start;
-	afarm->d_matx[afarm->start] = 0;
-	(afarm->as)[afarm->start] = afarm->anum;
-	i = -1;
-	while (++i < afarm->anum)
-		ar[i] = afarm->start;
 	i = -1;
 	// printf("TEST: reading\n");
 	while (list)
@@ -293,13 +288,20 @@ void	ft_farm_init(t_graph *afarm)
 int	main(int argc, char const **argv)
 {
 	t_graph afarm;
+	int		i;
 
 	if (argc < 1 || !argv[0])
 		return (0);
 	ft_farm_init(&afarm);
 	ft_read(-1, &afarm, NULL);
+	afarm.acr = (int*)malloc(sizeof(int) * afarm.anum);
+	afarm.anr = (int*)malloc(sizeof(int) * afarm.anum);
+	(afarm.as)[afarm.start] = afarm.anum;
+	i = -1;
+	while (++i < afarm.anum)
+		(afarm.acr)[i] = afarm.start;
 	ft_print_farm(&afarm, -1, -1);
-	// ft_solve_farm(&afarm);
+	ft_solve_farm(&afarm);
 	ft_clear_farm(&afarm);
 	return (0);
 }

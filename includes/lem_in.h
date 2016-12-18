@@ -37,7 +37,10 @@ typedef struct	s_graph
 	int		*s;
 	int		*aq;
 	int		*as;
-	int		*ar;
+	int		*acr;
+	int		*anr;
 }				t_graph;
+
+int				ft_solve_farm(t_graph *afarm);
 
 #endif

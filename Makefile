@@ -14,19 +14,16 @@ NAME		=	lem_in
 
 FUNC0		=	main.c
 
-#FUNCS		+=	sorts.c\
-				psw_op.c\
-				add_check.c\
-				get_op.c
+FUNCS		+=	solve.c
 
 LIBFT		=	./libft/libft.a
 LIBINC		=	-I./libft
 LIBLINK		=	-L./libft -lft
 
 CC			=	gcc
-CFLAGS		=	-Wall -Wextra -Werror
+CFLAGS		=	-Wall -Wextra -Werror -fsanitize=address
 OBJ0		=	$(addprefix $(OBJS_DIR), $(FUNC0:.c=.o))
-#OBJS		=	$(addprefix $(OBJS_DIR), $(FUNCS:.c=.o))
+OBJS		=	$(addprefix $(OBJS_DIR), $(FUNCS:.c=.o))
 
 INC_DIR		=	./includes/
 OBJS_DIR	=	./build/
@@ -44,7 +41,7 @@ build:
 
 $(OBJS_DIR)%.o: %.c | build
 	@$(CC) $(CFLAGS) $(LIBINC) -I $(INC_DIR) -c $(FUNC0) -o $(OBJ0)
-#	@$(CC) $(CFLAGS) $(LIBINC) -I $(INC_DIR) -c $< -o $@
+	@$(CC) $(CFLAGS) $(LIBINC) -I $(INC_DIR) -c $< -o $@
 
 $(LIBFT):
 	@make -C ./libft
