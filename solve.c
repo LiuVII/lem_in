@@ -59,14 +59,14 @@ int		ft_find_path(t_graph *afarm)
 	while (ft_isempty(afarm->q, afarm->rnum))
 	{
 		i = ft_get_mindist_rind(afarm);
-		// printf("%s: %d\n", (afarm->rnames)[i], (afarm->d_matx)[i]);
+		// printf("%s: %d| q:%d\n", (afarm->rnames)[i], (afarm->d_matx)[i], (afarm->aq)[i]);
 		(afarm->q)[i] = 0;
 		(afarm->s)[i] = 1;
 		j = -1;
 		while (++j < afarm->rnum)
 			if ((afarm->w_matx)[i][j] == 1)
 			{
-				tmp_dist = (afarm->d_matx)[i] + 1 + ((i != afarm->start) ? (afarm->aq)[i] : 0);
+				tmp_dist = (afarm->d_matx)[i] + 1 + ((i != afarm->finish) ? (afarm->aq)[i] : 0);
 				if (tmp_dist < (afarm->d_matx)[j])
 					(afarm->d_matx)[j] = tmp_dist;
 			}
@@ -80,16 +80,22 @@ void	ft_print_changes(t_graph *afarm)
 
 	i = -1;
 	while (++i < afarm->anum)
-	{
-		ft_putchar('L');
-		ft_putnbr(i);
-		ft_putchar('-');
 		if ((afarm->anr)[i] != -1)
+		{
+			ft_putchar('L');
+			ft_putnbr(i + 1);
+			ft_putchar('-');
 			ft_putstr((afarm->rnames)[(afarm->anr)[i]]);
-		else
-			ft_putstr((afarm->rnames)[(afarm->acr)[i]]);
-		ft_putchar(' ');
-	}
+			ft_putchar(' ');
+		}
+		// else
+		// {
+		// 	ft_putchar('L');
+		// 	ft_putnbr(i + 1);
+		// 	ft_putchar('-');
+		// 	ft_putstr((afarm->rnames)[(afarm->acr)[i]]);
+		// 	ft_putchar(' ');
+		// }
 	ft_putchar('\n');
 }
 
@@ -102,47 +108,52 @@ int		ft_iter_farm(t_graph *afarm)
 
 	i = -1;
 	while (++i < afarm->anum)
-	{
-		(afarm->anr)[i] = -1;
-		ft_find_path(afarm);
-		j = -1;
-		while (++j < afarm->rnum)
+		if ((afarm->acr)[i] != afarm->finish)
 		{
-			printf("room: %s dist: %d\n", (afarm->rnames)[j], (afarm->d_matx)[j]);
+			// (afarm->anr)[i] = -1;
+			ft_find_path(afarm);
+			j = -1;
+			// while (++j < afarm->rnum)
+			// 	printf("room: %s dist: %d\n", (afarm->rnames)[j], (afarm->d_matx)[j]);
+			// printf("\n");
+			j = -1;
+			// printf("ant L%d, curr room: %s\n", i, (afarm->rnames)[(afarm->acr)[i]]);
+			next_r = (afarm->acr)[i];
+			while (++j < afarm->rnum)
+				if (afarm->w_matx[(afarm->acr)[i]][j] == 1)
+					if ((afarm->d_matx)[j] + (afarm->aq)[j] < (afarm->d_matx)[next_r] + (afarm->aq)[next_r])
+						next_r = j;
+			if (!(afarm->aq)[next_r] && next_r != (afarm->acr)[i])
+			{
+				(afarm->anr)[i] = next_r;
+				(afarm->as)[next_r]++;
+				(afarm->as)[(afarm->acr)[i]]--;
+			}
+			(next_r != afarm->finish) ? (afarm->aq)[next_r]++ : 0;
+			((afarm->acr)[i] != afarm->start) ?	(afarm->aq)[(afarm->acr)[i]]-- : 0;
 		}
-		printf("\n");
-		j = -1;
-		printf("curr room: %s\n", (afarm->rnames)[(afarm->acr)[i]]);
-		next_r = (afarm->acr)[i];
-		while (++j < afarm->rnum)
-			if (afarm->w_matx[(afarm->acr)[i]][j] == 1)
-				if ((afarm->d_matx)[j] < (afarm->d_matx)[next_r])
-					next_r = j;
-		if (!(afarm->aq)[next_r] && next_r != (afarm->acr)[i])
-		{
-			(afarm->anr)[i] = next_r;
-			(afarm->as)[next_r]++;
-			(afarm->as)[(afarm->acr)[i]]--;
-		}
-		(afarm->aq)[next_r]++;
-		(afarm->aq)[(afarm->acr)[i]]--;
-	}
 	ft_print_changes(afarm);
 	return (0);
 }
 
 int		ft_solve_farm(t_graph *afarm)
 {
-	int		iter;
+	// int		iter;
 	int		i;	
 	
-	iter = 4;
-	while (iter-- && (afarm->as)[afarm->finish] != afarm->anum)
+	// iter = 4;
+	while (/*iter-- &&*/(afarm->as)[afarm->finish] != afarm->anum)
 	{
-		ft_iter_farm(afarm);
 		i = -1;
 		while (++i < afarm->anum)
+		{
 			((afarm->anr)[i] >= 0) ? (afarm->acr)[i] = (afarm->anr)[i] : 0;
+			(afarm->anr)[i] = -1;
+		}
+		ft_iter_farm(afarm);
+		i = -1;
+		while (++i < afarm->rnum)
+			(afarm->aq)[i] = (i != afarm->start && i != afarm->finish) ? (afarm->as)[i] : 0;
 	}
 	return (0);
 }
