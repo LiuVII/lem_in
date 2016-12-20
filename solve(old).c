@@ -59,7 +59,7 @@ int		ft_find_path(t_graph *afarm)
 	while (ft_isempty(afarm->q, afarm->rnum))
 	{
 		i = ft_get_mindist_rind(afarm);
-		// printf("%s: %d| q:%d\n", (afarm->rnames)[i], (afarm->d_matx)[i], (afarm->aq)[i]);
+		printf("%s: %d| q:%d\n", (afarm->rnames)[i], (afarm->d_matx)[i], (afarm->aq)[i]);
 		(afarm->q)[i] = 0;
 		(afarm->s)[i] = 1;
 		j = -1;

@@ -24,19 +24,6 @@ int		ft_isempty(int *arr, int n)
 	return (-1);
 }
 
-int		ft_isfull(int *arr, int n)
-{
-	int		i;
-	int		sum;
-
-	i = -1;
-	sum = 0;
-	while (++i < n)
-		if (arr[i] != 0)
-			sum++;
-	return (sum);
-}
-
 void	ft_print_changes(t_graph *afarm)
 {
 	int		i;
@@ -62,7 +49,7 @@ void	ft_print_changes(t_graph *afarm)
 	ft_putchar('\n');
 }
 
-int		ft_get_mindist_rind(t_graph *afarm)
+int		ft_get_mindist_rind(int *darr, t_graph *afarm)
 {
 	int		i;
 	int		j;
@@ -72,47 +59,98 @@ int		ft_get_mindist_rind(t_graph *afarm)
 	j = -1;
 	min_dist = afarm->rnum + afarm->anum + 1;
 	while (++i < afarm->rnum)
-		if ((afarm->q)[i] && (afarm->d_matx)[i] < min_dist)
+		if ((afarm->q)[i] && (darr)[i] < min_dist)
 			{
 				j = i;
-				min_dist = (afarm->d_matx)[i];
+				min_dist = (darr)[i];
 			}
 	return (j);
 }
 
-void	ft_find_path(t_graph *afarm, int i)
+int		ft_num_path(int *darr, t_graph *afarm, int i, int start)
 {
 	int		j;
 	int		tmp_dist;
+	int		max_dist;
 
 	while (++i < afarm->rnum)
 	{
 		(afarm->q)[i] = 1;
 		(afarm->s)[i] = 0;
-		(afarm->d_matx)[i] = afarm->rnum + afarm->anum + 1;
+		(darr)[i] = afarm->rnum + afarm->anum + 1;
 	}
-	(afarm->d_matx)[afarm->finish] = 0;
+	(darr)[start] = 0;
+	max_dist = 0;
 	while (ft_isempty(afarm->q, afarm->rnum) >= 0)
 	{
-		i = ft_get_mindist_rind(afarm);
-		// printf("%s: %d| q:%d\n", (afarm->rnames)[i], (afarm->d_matx)[i], (afarm->aq)[i]);
+		i = ft_get_mindist_rind(darr, afarm);
+		printf("%s: %d|\n", (afarm->rnames)[i], (darr)[i]);
 		(afarm->q)[i] = 0;
 		(afarm->s)[i] = 1;
 		j = -1;
 		while (++j < afarm->rnum)
 			if ((afarm->w_matx)[i][j] == 1)
 			{
-				tmp_dist = (afarm->d_matx)[i] + 1 + ((j != afarm->finish) ? (afarm->aq)[j] : 0);
-				if (tmp_dist < (afarm->d_matx)[j])
-					(afarm->d_matx)[j] = tmp_dist;
+				tmp_dist = (darr)[i] + 1;
+				if (tmp_dist < (darr)[j])
+				{
+					(darr)[j] = tmp_dist;
+					if (max_dist < tmp_dist)
+						max_dist = tmp_dist;
+				}
 			}
 	}
+	return (max_dist);
 }
 
+void	ft_find_path(t_graph *afarm, int room, t_list *list, int step)
+{
+	int		i;
+	int		j;
+
+	i = -1;
+	j = 0;
+	if (room != afarm->finish)
+	{
+		while (++i < afarm->rnum)
+			if ((afarm->w_matx)[room][i] == 1 &&
+				(afarm->d_matx[i] > afarm->d_matx[room] ||
+					afarm->dr_matx[i] < afarm->dr_matx[room]))
+			{
+				printf("step %d, r-nr: %s - %s\n", step, afarm->rnames[room], afarm->rnames[i]);
+				if (!j && ++j)
+				{
+					printf("bef first cont %d\n", list->id);
+					((int*)(list->content))[step] = i;
+					list->id = step + 1;
+				}
+				else
+				{
+					printf("bef next\n");
+					while (list->next)
+						list = list->next;
+					list->next = ft_lstnew(NULL, 0);
+					list->next->content = (int*)malloc(sizeof(int) * (afarm->rnum + afarm->anum));
+					printf("bef memcpy\n");
+					list->next->content = memcpy(list->next->content, list->content, sizeof(int) * (afarm->rnum + afarm->anum));
+					printf("after memcpy %d\n", step);
+					((int*)(list->next->content))[step] = i;
+					list->next->id = step + 1;
+					list->next->c_s = 0;
+					list = list->next;
+				}
+				ft_find_path(afarm, i, list, step + 1);
+			}
+	}
+	else
+		list->c_s = 1;
+}
+
+//REBUILD
 int		ft_min_path(t_graph *afarm, int room)
 {
 	int		i;
-	int		tmp_dist;	
+	int		tmp_dist;
 
 	i = -1;
 	tmp_dist = (afarm->d_matx)[room];
@@ -123,132 +161,58 @@ int		ft_min_path(t_graph *afarm, int room)
 	return (tmp_dist);
 }
 
-void	ft_apply_choice(int i, t_graph *afarm, int curr_r, int next_r)
+//CREATE ARRAYS
+void	ft_find_best(t_graph *afarm, t_list *list, int i, int best_sol)
 {
-	if ((next_r == afarm->finish || !(afarm->as)[next_r]) && next_r != curr_r)
-	{
-		(afarm->acr)[i] = next_r;
-		(afarm->as)[next_r]++;
-		(afarm->as)[curr_r]--;
-		(curr_r != afarm->start) ? (afarm->aq)[curr_r]-- : 0;
-	}
-	(next_r != afarm->finish) ? (afarm->aq)[next_r]++ : 0;
-}
+	int		path_n;
+	t_list	*tmp;
 
-void	ft_rollback_choice(int i, t_graph *afarm, int curr_r, int next_r)
-{
-	(next_r != afarm->finish) ? (afarm->aq)[next_r]-- : 0;
-	if ((afarm->acr)[i] == next_r)
+	while (++i < afarm->anum)
 	{
-		(afarm->acr)[i] = curr_r;
-		(afarm->as)[next_r]--;
-		(afarm->as)[curr_r]++;
-		(curr_r != afarm->start) ? (afarm->aq)[curr_r]++ : 0;
+		path_n = ft_min_path(list);
+		afarm->as[i] = path_n;
+		afarm->path_s[path_n]++;
 	}
 }
 
-int		ft_iter_farm(int *ant_arr, t_graph *afarm, int steps, int rchoice, int check)
+void	ft_lstprint(t_graph *afarm, t_list *list)
 {
-	int		i; /* current ant*/
-	int		j;
-	int		next_r;
-	int		curr_r;
-	int		min_dist;
-	int		stepinc;
-	// int		curr_ant;
+	int i;
 
-	// exit condition when all ants reach finish
-	if (afarm->as[afarm->finish] == afarm->anum)
-		return (steps);
-	// pick first availble ant and if all ants made thier move or decided to wait, reset environment for another step
-	if ((ft_isempty(ant_arr, afarm->anum)) < 0)
+	while (list)
 	{
-		// increase number of steps to the goal
-		steps++;
-		// reset available ants
-		j = -1;
-		while (++j < afarm->anum)
-			if ((afarm->acr)[j] != afarm->finish)
-				ant_arr[j] = 1;
+		i = -1;
+		printf("arr size: %d, is a path %zu\narr: ", list->id, list->c_s);
+		while (++i < list->id)
+			printf("%s ", afarm->rnames[((int*)list->content)[i]]);
+		printf("\n");
+		list = list->next;
 	}
-	j = -1;
-	while (++j < afarm->anum)
-		if (ant_arr[j] && (afarm->acr)[j] != afarm->finish)
-			break ;
-	i = j;
-	ant_arr[i] = 0;
-	curr_r = (afarm->acr)[i];
-	//	calculate available paths & find min_dist
-	// printf("steps: %d| ant: %d curr_r %s\n", steps, i, afarm->rnames[curr_r]);
-	ft_find_path(afarm, -1);
-	min_dist = ft_min_path(afarm, curr_r);
-	// printf("min_dist %d\n", min_dist);
-	// select and explore all paths of min dist
-	next_r = -1;
-	stepinc = -1;
-	while (++next_r < afarm->rnum)
-		if (afarm->w_matx[curr_r][next_r] == 1)
-			if ((afarm->d_matx)[next_r] == min_dist)
-			{
-				//apply changes
-				// printf("next_r %s\n", afarm->rnames[next_r]);
-				ft_apply_choice(i, afarm, curr_r, next_r);
-				// printf("queue %d, changed curr_r to %s\n", (afarm->aq)[next_r], afarm->rnames[next_r]);
-				//call recursion to find number of steps in path
-				if (((j = ft_iter_farm(ant_arr, afarm, steps, -1, 1)) < stepinc && j >= 0) || stepinc == -1)
-				{
-					rchoice = next_r;
-					stepinc = j;
-				}
-				//roll back changes
-				ft_rollback_choice(i, afarm, curr_r, next_r);
-				// (afarm->acr)[i] = curr_r;
-				// printf("steps: %d, ant: %d, rollback next_r %s\n", steps, i, afarm->rnames[next_r]);
-			}
-	ant_arr[i] = 1;
-	if (ft_isfull(ant_arr, afarm->anum) + (afarm->as)[afarm->finish] == afarm->anum)
-	{
-		j = -1;
-		while (++j < afarm->anum)
-			ant_arr[j] = 0;
-	}
-	if (steps > 1 || check)
-		return (stepinc);
-	return (rchoice);
 }
+
 
 int		ft_solve_farm(t_graph *afarm)
 {
 	int		iter;
 	int		i;
-	int		j;
-	int 	*ant_arr;
-	int		rchoice;
+	// int		j;
+	t_list *list;
 	
-	iter = 12;
-	ant_arr = (int*)malloc(sizeof(int) * afarm->anum);
+	iter = 1;
 	i = -1;
-	while (++i < afarm->anum)
-		ant_arr[i] = 0;
-	while (iter-- && (afarm->as)[afarm->finish] != afarm->anum)
-	{
-		rchoice = ft_iter_farm(ant_arr, afarm, 0, -1, 0);
-		if ((ft_isempty(ant_arr, afarm->anum)) < 0)
-		{
-			// reset available ants
-			j = -1;
-			while (++j < afarm->anum)
-				if ((afarm->acr)[j] != afarm->finish)
-					ant_arr[j] = 1;
-		}
-		j = -1;
-		while (++j < afarm->anum)
-			if (ant_arr[j] && (afarm->acr)[j] != afarm->finish)
-				break ;
-		i = j;
-		printf("Ant: %d, Curr_R: %s, Choice: %s\n",i, afarm->rnames[(afarm->acr)[i]], afarm->rnames[rchoice]);
-		ant_arr[i] = 0;
-		ft_apply_choice(i, afarm, (afarm->acr)[i], rchoice);
-	}
+	afarm->mdist = ft_num_path(afarm->d_matx, afarm, -1, afarm->start);
+	printf("MAX DIST%d\n", afarm->mdist);
+	ft_num_path(afarm->dr_matx, afarm, -1, afarm->finish);
+	list = ft_lstnew(NULL, 0);
+	list->content = (int*)malloc(sizeof(int) * (afarm->rnum + afarm->anum));
+	list->id = 0;
+	list->c_s = 0;
+	ft_find_path(afarm, afarm->start, list, 0);
+	// NEEDED FUNCTION to select only unique path, indicate ID by list->c_s;
+	ft_lstprint(afarm, list);
+	// ft_lstclr(&list);
+	// while (iter-- && (afarm->as)[afarm->finish] != afarm->anum)
+	// {
+	// }
 	return (0);
 }

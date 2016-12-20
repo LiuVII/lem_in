@@ -24,6 +24,15 @@
 # include <sys/uio.h>
 # include "libft.h"
 
+
+typedef struct	s_arlist
+{
+	int				n;
+	int				*rooms;
+	int				*shift;
+	struct s_arlist	*next;
+}				t_arlist;
+
 typedef struct	s_graph
 {
 	int		anum;
@@ -32,6 +41,7 @@ typedef struct	s_graph
 	int		finish;
 	int		**w_matx;
 	int		*d_matx;
+	int		*dr_matx;
 	char	**rnames;
 	int		*q;
 	int		*s;
@@ -39,6 +49,7 @@ typedef struct	s_graph
 	int		*as;
 	int		*acr;
 	int		*anr;
+	int		mdist;
 }				t_graph;
 
 int				ft_solve_farm(t_graph *afarm);

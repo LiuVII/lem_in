@@ -230,6 +230,7 @@ int		ft_read(int i, t_graph *afarm, t_list *list)
 	ft_read_to_list(&list, 0, 0, afarm);
 	afarm->w_matx = (int**)malloc(sizeof(int*) * afarm->rnum);
 	afarm->d_matx = (int*)malloc(sizeof(int) * afarm->rnum);
+	afarm->dr_matx = (int*)malloc(sizeof(int) * afarm->rnum);
 	afarm->q = (int*)malloc(sizeof(int) * afarm->rnum);
 	afarm->s = (int*)malloc(sizeof(int) * afarm->rnum);
 	afarm->aq = (int*)malloc(sizeof(int) * afarm->rnum);
