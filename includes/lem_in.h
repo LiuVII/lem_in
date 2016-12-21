@@ -25,13 +25,14 @@
 # include "libft.h"
 
 
-typedef struct	s_arlist
+typedef struct	s_apath
 {
 	int				n;
+	int				incr;
+	int				enable;
 	int				*rooms;
-	int				*shift;
-	struct s_arlist	*next;
-}				t_arlist;
+	int				*cross_p;
+}				t_apath;
 
 typedef struct	s_graph
 {
@@ -47,9 +48,12 @@ typedef struct	s_graph
 	int		*s;
 	int		*aq;
 	int		*as;
-	int		*acr;
-	int		*anr;
+	// int		*acr;
+	// int		*anr;
 	int		mdist;
+	int		*path_s;
+	t_apath	*parr;
+	int		pnum;
 }				t_graph;
 
 int				ft_solve_farm(t_graph *afarm);
