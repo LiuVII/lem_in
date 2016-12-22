@@ -51,7 +51,7 @@ int	main(int argc, char const **argv)
 	afarm.s = (int*)malloc(sizeof(int) * afarm.rnum);
 	afarm.aq = (int*)malloc(sizeof(int) * afarm.anum);
 	afarm.as = (int*)malloc(sizeof(int) * afarm.anum);
-	ft_print_farm(&afarm, -1, -1);
+	(afarm.spine[3]) ? ft_print_farm(&afarm, -1, -1) : 0;
 	ft_solve_farm(&afarm);
 	ft_clear_farm(&afarm);
 	return (0);

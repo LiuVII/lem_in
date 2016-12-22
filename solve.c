@@ -175,14 +175,14 @@ int		ft_solve_farm(t_graph *afarm)
 		afarm->q[j] = 1;
 	afarm->q[afarm->start] = 0;
 	ft_find_path(afarm, afarm->start, list, 0);
-	ft_lstprint(afarm, list);
+	(afarm->spine[1]) ? ft_lstprint(afarm, list) : 0;
 	if (ft_list_to_array(afarm, list, 0, 0))
 	{
 		ft_find_intersections(afarm);
-		ft_print_intsecs(afarm);
+		(afarm->spine[2]) ? ft_print_intsecs(afarm) : 0;
 		min = afarm->rnum + afarm->anum - 1;
 		ft_find_best(afarm, &min, 0, 0);
-		ft_print_solution(afarm, min);
+		(afarm->spine[0]) ? ft_print_solution(afarm, min) : 0;
 		ft_print_steps(afarm, min + 1, 0, NULL);
 	}
 	ft_lstclr(&list);
