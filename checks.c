@@ -46,7 +46,7 @@ int		ft_check_rnb(char *line, int i)
 {
 	char	**arr;
 
-	if (!(arr = ft_strsplit(line,' ')))
+	if (!(arr = ft_strsplit(line, ' ')))
 		return (0);
 	i = 0;
 	while (arr[i])
@@ -57,11 +57,11 @@ int		ft_check_rnb(char *line, int i)
 		return (1);
 	}
 	ft_mapfree(&arr);
-	if (!(arr = ft_strsplit(line,'-')))
+	if (!(arr = ft_strsplit(line, '-')))
 		return (0);
 	i = 0;
 	while (arr[i])
-		i++;	
+		i++;
 	if (i == 2 && arr[0] && arr[1])
 	{
 		ft_mapfree(&arr);

@@ -13,6 +13,17 @@
 #include "lem_in.h"
 #include <stdio.h>
 
+t_list	*ft_create_lnode(int step, t_graph *afarm)
+{
+	t_list	*new;
+
+	new = ft_lstnew(NULL, 0);
+	new->content = (int*)malloc(sizeof(int) * (afarm->rnum + afarm->anum));
+	new->id = step;
+	new->c_s = 0;
+	return (new);
+}
+
 /*
 ** set queue to have initial occupancy of the rooms
 ** set all ants to a start room (index of path)
@@ -29,7 +40,7 @@ void	ft_printsteps_prepare(t_graph *afarm)
 	afarm->q[afarm->start] = afarm->anum;
 	i = -1;
 	while (++i < afarm->anum)
-		afarm->aq[i] = 0;	
+		afarm->aq[i] = 0;
 }
 
 void	ft_clear_farm(t_graph *afarm)
@@ -65,11 +76,13 @@ void	ft_free_n_exit(char *line, t_list **list, int err)
 		ft_putnbr_fd(err, 2);
 		ft_putstr_fd(" Error\n", 2);
 	}
-	(err) ? exit(-1) : exit (0);
+	(err) ? exit(-1) : exit(0);
 }
 
 void	ft_farm_init(t_graph *afarm)
 {
+	int		i;
+
 	afarm->anum = 0;
 	afarm->rnum = 0;
 	afarm->start = 0;
@@ -82,4 +95,7 @@ void	ft_farm_init(t_graph *afarm)
 	afarm->aq = NULL;
 	afarm->as = NULL;
 	afarm->parr = NULL;
+	i = -1;
+	while (++i < 5)
+		afarm->spine[i] = 0;
 }

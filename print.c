@@ -68,13 +68,6 @@ void	ft_print_solution(t_graph *afarm, int steps)
 	printf("\n");
 }
 
-/*
-** set queue to have initial occupancy of the rooms
-** set all ants to a start room (index of path)
-*/
-
-
-
 void	ft_print_steps(t_graph *afarm, int steps, int ctr, t_apath *pn)
 {
 	int		i;
@@ -115,7 +108,7 @@ void	ft_print_intsecs(t_graph *afarm)
 		j = -1;
 		printf("path: %3d, fin: %d | ", i, (afarm->parr[i]).enable);
 		while (++j < afarm->pnum)
-			printf(" %d",(afarm->parr[i]).cross_p[j]);
+			printf(" %d", (afarm->parr[i]).cross_p[j]);
 		printf("\n");
 	}
 	printf("\n");

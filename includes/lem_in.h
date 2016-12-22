@@ -47,19 +47,25 @@ typedef struct	s_graph
 	int		*as;
 	t_apath	*parr;
 	int		pnum;
+	int		spine[5];
 }				t_graph;
 
 int				ft_solve_farm(t_graph *afarm);
+
 int				ft_read(t_graph *afarm, t_list *list, int i, int j);
+
 int				ft_check_rnb(char *line, int i);
+
 void			ft_clear_farm(t_graph *afarm);
 void			ft_free_n_exit(char *line, t_list **list, int err);
 void			ft_farm_init(t_graph *afarm);
+t_list			*ft_create_lnode(int step, t_graph *afarm);
+void			ft_printsteps_prepare(t_graph *afarm);
+
 void			ft_lstprint(t_graph *afarm, t_list *list);
 void			ft_print_solution(t_graph *afarm, int steps);
 void			ft_print_steps(t_graph *afarm, int steps, int ctr, t_apath *pn);
 void			ft_print_intsecs(t_graph *afarm);
-void			ft_printsteps_prepare(t_graph *afarm);
 void			ft_print_farm(t_graph *afarm, int i, int j);
 
 #endif

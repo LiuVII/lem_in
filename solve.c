@@ -13,16 +13,10 @@
 #include "lem_in.h"
 #include <stdio.h>
 
-t_list	*ft_create_lnode(int step, t_graph *afarm)
-{
-	t_list	*new;
-
-	new = ft_lstnew(NULL, 0);
-	new->content = (int*)malloc(sizeof(int) * (afarm->rnum + afarm->anum));	
-	new->id = step;
-	new->c_s = 0;
-	return (new);
-}
+/*
+** pf("step %d, r-nr: %s - %s\n", step, afarm->rnames[room], afarm->rnames[i]);
+** printf("bef first cont %d\n", list->id);
+*/
 
 void	ft_find_path(t_graph *afarm, int room, t_list *list, int step)
 {
@@ -34,20 +28,15 @@ void	ft_find_path(t_graph *afarm, int room, t_list *list, int step)
 		while (++i < afarm->rnum)
 			if ((afarm->w_matx)[room][i] == 1 && afarm->q[i])
 			{
-				// printf("step %d, r-nr: %s - %s\n", step, afarm->rnames[room], afarm->rnames[i]);
 				if (!j && ++j && (list->id = step + 1))
-					// printf("bef first cont %d\n", list->id);
 					((int*)(list->content))[step] = i;
 				else
 				{
-					// printf("bef next\n");
 					while (list->next)
 						list = list->next;
 					list->next = ft_create_lnode(step + 1, afarm);
-					// printf("bef memcpy\n");
 					ft_memcpy(list->next->content, list->content,
 						sizeof(int) * (afarm->rnum + afarm->anum));
-					// printf("after memcpy %d\n", step);
 					((int*)(list->next->content))[step] = i;
 					list = list->next;
 				}
@@ -93,11 +82,11 @@ int		ft_list_to_array(t_graph *afarm, t_list *list, int i, int check)
 
 /*
 ** select path and assign numbers of intersected paths
-** 		reset all rooms | disable rooms for a selected path |
-** 		select path that has higher index then selected (cross ref check)
+** 	reset all rooms | disable rooms for a selected path |
+** 	select path that has higher index then selected (cross ref check)
 ** 		check rooms if any of them are disabled
-** 			if at least one is disabled add path number to array of intersection 
-** 			belonging to initially selected path (cross ref of course)
+** 		if at least one is disabled add path number to array of intersection
+** 		belonging to initially selected path (cross ref of course)
 */
 
 void	ft_find_intersections(t_graph *afarm)
@@ -109,24 +98,24 @@ void	ft_find_intersections(t_graph *afarm)
 	i = -1;
 	while (++i < afarm->pnum)
 		if ((afarm->parr[i]).enable)
-	{
-		j = -1;
-		while (++j < afarm->rnum)
-			afarm->q[j] = 1;
-		j = -1;
-		while (++j < (afarm->parr[i]).n)
-			afarm->q[(afarm->parr[i]).rooms[j]] = 0;
-		l = i;
-		while (++l < afarm->pnum)
-			if ((afarm->parr[l]).enable && (j = -1))
-				while (++j < (afarm->parr[l]).n)
-					if (afarm->q[(afarm->parr[l]).rooms[j]] == 0)
-					{
-						(afarm->parr[i]).cross_p[l]	= 1;
-						(afarm->parr[l]).cross_p[i]	= 1;
-						break ;
-					}
-	}
+		{
+			j = -1;
+			while (++j < afarm->rnum)
+				afarm->q[j] = 1;
+			j = -1;
+			while (++j < (afarm->parr[i]).n)
+				afarm->q[(afarm->parr[i]).rooms[j]] = 0;
+			l = i;
+			while (++l < afarm->pnum)
+				if ((afarm->parr[l]).enable && (j = -1))
+					while (++j < (afarm->parr[l]).n)
+						if (afarm->q[(afarm->parr[l]).rooms[j]] == 0)
+						{
+							(afarm->parr[i]).cross_p[l] = 1;
+							(afarm->parr[l]).cross_p[i] = 1;
+							break ;
+						}
+		}
 }
 
 /*
@@ -134,7 +123,7 @@ void	ft_find_intersections(t_graph *afarm)
 ** 		previous minimum => record it | for ant | select available path |
 ** disable intersected paths | assign selected path to selected ant |
 ** renew number of steps of current soulution to the MAX of all paths selected |
-** increment path usage | call recursion for the next ant | decrement path usage |
+** increment path usage| call recursion for the next ant| decrement path usage |
 ** enable intersected paths if current one was not already used before
 */
 
@@ -148,13 +137,12 @@ void	ft_find_best(t_graph *afarm, int *min, int curr, int ant)
 		&& (*min = curr))
 		while (++i < afarm->anum)
 			afarm->as[i] = afarm->aq[i];
-		// ft_print_solution(afarm, *min);
 	else if (ant != afarm->anum && curr < *min && (i = -1))
 		while (++i < afarm->pnum)
 			if ((afarm->parr[i]).enable > 0 && (j = -1))
 			{
 				while (++j < afarm->pnum)
-					if ((afarm->parr[i]).cross_p[j]	== 1)
+					if ((afarm->parr[i]).cross_p[j] == 1)
 						(afarm->parr[j]).enable--;
 				(afarm->aq)[ant] = i;
 				t_curr = MAX((afarm->parr[i]).n + (afarm->parr[i]).incr, curr);
@@ -163,7 +151,7 @@ void	ft_find_best(t_graph *afarm, int *min, int curr, int ant)
 				(afarm->parr[i]).incr--;
 				j = -1;
 				while (++j < afarm->pnum)
-					if ((afarm->parr[i]).cross_p[j]	== 1)
+					if ((afarm->parr[i]).cross_p[j] == 1)
 						(afarm->parr[j]).enable++;
 			}
 }
@@ -171,16 +159,16 @@ void	ft_find_best(t_graph *afarm, int *min, int curr, int ant)
 /*
 ** create first list element
 ** find all possible paths
-** convert list to arrray and find intersections betwern paths 
-** 		find best solution, set as maximum possible distance between any two nodes
+** convert list to arrray and find intersections betwern paths
+** 	find best solution, set as maximum possible distance between any two nodes
 */
 
 int		ft_solve_farm(t_graph *afarm)
 {
 	int		j;
 	int		min;
-	t_list *list;
-	
+	t_list	*list;
+
 	list = ft_create_lnode(0, afarm);
 	j = -1;
 	while (++j < afarm->rnum)
