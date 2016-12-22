@@ -24,14 +24,13 @@
 # include <sys/uio.h>
 # include "libft.h"
 
-
 typedef struct	s_apath
 {
-	int				n;
-	int				incr;
-	int				enable;
-	int				*rooms;
-	int				*cross_p;
+	int		n;
+	int		incr;
+	int		enable;
+	int		*rooms;
+	int		*cross_p;
 }				t_apath;
 
 typedef struct	s_graph
@@ -41,21 +40,26 @@ typedef struct	s_graph
 	int		start;
 	int		finish;
 	int		**w_matx;
-	int		*d_matx;
-	int		*dr_matx;
 	char	**rnames;
 	int		*q;
 	int		*s;
 	int		*aq;
 	int		*as;
-	// int		*acr;
-	// int		*anr;
-	int		mdist;
-	int		*path_s;
 	t_apath	*parr;
 	int		pnum;
 }				t_graph;
 
 int				ft_solve_farm(t_graph *afarm);
+int				ft_read(t_graph *afarm, t_list *list, int i, int j);
+int				ft_check_rnb(char *line, int i);
+void			ft_clear_farm(t_graph *afarm);
+void			ft_free_n_exit(char *line, t_list **list, int err);
+void			ft_farm_init(t_graph *afarm);
+void			ft_lstprint(t_graph *afarm, t_list *list);
+void			ft_print_solution(t_graph *afarm, int steps);
+void			ft_print_steps(t_graph *afarm, int steps, int ctr, t_apath *pn);
+void			ft_print_intsecs(t_graph *afarm);
+void			ft_printsteps_prepare(t_graph *afarm);
+void			ft_print_farm(t_graph *afarm, int i, int j);
 
 #endif

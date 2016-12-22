@@ -14,7 +14,11 @@ NAME		=	lem_in
 
 FUNC0		=	main.c
 
-FUNCS		+=	solve.c
+FUNCS		+=	solve.c\
+				print.c\
+				read.c\
+				servfunc.c\
+				checks.c
 
 LIBFT		=	./libft/libft.a
 LIBINC		=	-I./libft

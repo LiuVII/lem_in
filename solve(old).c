@@ -13,6 +13,78 @@
 #include "lem_in.h"
 #include <stdio.h>
 
+
+
+
+// int		ft_isempty(int *arr, int n)
+// {
+// 	int		i;
+
+// 	i = -1;
+// 	while (++i < n)
+// 		if (arr[i] > 0)
+// 			return (i);
+// 	return (-1);
+// }
+
+
+
+// int		ft_get_mindist_rind(int *darr, t_graph *afarm)
+// {
+// 	int		i;
+// 	int		j;
+// 	int		min_dist;
+
+// 	i = -1;
+// 	j = -1;
+// 	min_dist = afarm->rnum + afarm->anum + 1;
+// 	while (++i < afarm->rnum)
+// 		if ((afarm->q)[i] && (darr)[i] < min_dist)
+// 			{
+// 				j = i;
+// 				min_dist = (darr)[i];
+// 			}
+// 	return (j);
+// }
+
+// int		ft_num_path(int *darr, t_graph *afarm, int i, int start)
+// {
+// 	int		j;
+// 	int		tmp_dist;
+// 	int		max_dist;
+
+// 	while (++i < afarm->rnum)
+// 	{
+// 		(afarm->q)[i] = 1;
+// 		(afarm->s)[i] = 0;
+// 		(darr)[i] = afarm->rnum + afarm->anum + 1;
+// 	}
+// 	(darr)[start] = 0;
+// 	max_dist = 0;
+// 	while (ft_isempty(afarm->q, afarm->rnum) >= 0)
+// 	{
+// 		i = ft_get_mindist_rind(darr, afarm);
+// 		printf("%s: %d|\n", (afarm->rnames)[i], (darr)[i]);
+// 		(afarm->q)[i] = 0;
+// 		(afarm->s)[i] = 1;
+// 		j = -1;
+// 		while (++j < afarm->rnum)
+// 			if ((afarm->w_matx)[i][j] == 1)
+// 			{
+// 				tmp_dist = (darr)[i] + 1;
+// 				if (tmp_dist < (darr)[j])
+// 				{
+// 					(darr)[j] = tmp_dist;
+// 					if (max_dist < tmp_dist)
+// 						max_dist = tmp_dist;
+// 				}
+// 			}
+// 	}
+// 	return (max_dist);
+// }
+
+
+
 int		ft_isempty(int *arr, int n)
 {
 	int		i;
