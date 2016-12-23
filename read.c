@@ -20,22 +20,24 @@
 
 int		ft_line_id(char *line, int *fl, t_graph *afarm)
 {
-	if (!(*fl) && (*fl = 2))
+	if (!(*fl) && (*fl = 2) && (*line))
 		return (0);
 	else if (!ft_strcmp(line, "##start") && (*fl = -1))
 		return (-1);
 	else if (!ft_strcmp(line, "##end") && (*fl = 1))
 		return (1);
-	else if (*line != '#' && *fl == -1 && ft_check_rnb(line, 0) > 0 && (*fl = 2)
+	else if (*line != '#' && *fl == -1 && ft_check_rnb(line, 0, 0) > 0
+		&& (afarm->start == -1) && (*fl = 2)
 		&& (afarm->start = afarm->rnum) >= 0 && ++(afarm->rnum))
 		return (2);
-	else if (*line != '#' && *fl == 1 && ft_check_rnb(line, 0) > 0 && (*fl = 2)
+	else if (*line != '#' && *fl == 1 && ft_check_rnb(line, 0, 0) > 0
+		&& (afarm->finish == -1) && (*fl = 2)
 		&& (afarm->finish = afarm->rnum) >= 0 && ++(afarm->rnum))
 		return (2);
-	else if (*line != '#' && *fl > 1 && ft_check_rnb(line, 0) > 0
-		&& afarm->rnum++)
+	else if (*line != '#' && *fl > 1 && ft_check_rnb(line, 0, 0) > 0
+		&& ++(afarm->rnum))
 		return (2);
-	else if (*line != '#' && ft_check_rnb(line, 0) < 0 && (*fl = -2))
+	else if (*line != '#' && ft_check_rnb(line, 0, 0) < 0 && (*fl = -2))
 		return (3);
 	else if (*line == '#')
 		return (10);
@@ -52,23 +54,23 @@ void	ft_read_to_list(t_list **list, int ret, int flag, t_graph *afarm)
 		if (!(*list))
 		{
 			if (!(*list = ft_lstnew(line, ft_strlen(line) + 1)))
-				ft_free_n_exit(line, list, -5);
+				ft_free_n_exit(afarm->spine[4], line, list, -5);
 			tmp = *list;
 		}
 		else
 		{
 			if (!(tmp->next = ft_lstnew(line, ft_strlen(line) + 1)))
-				ft_free_n_exit(line, list, -5);
+				ft_free_n_exit(afarm->spine[4], line, list, -5);
 			tmp = tmp->next;
 		}
 		if ((tmp->id = ft_line_id(line, &flag, afarm)) == -10)
-			ft_free_n_exit(line, list, -10);
-		printf("%s\n", line);
+			ft_free_n_exit(afarm->spine[4], line, list, -10);
+		ft_printf("%s\n", line);
 		free(line);
 	}
-	tmp->next = NULL;
+	(tmp) ? tmp->next = NULL : 0;
 	free(line);
-	(ret == -1) ? ft_free_n_exit(NULL, list, -4) : 0;
+	(ret == -1) ? ft_free_n_exit(afarm->spine[4], NULL, list, -4) : 0;
 }
 
 int		ft_rec_bond(t_list *list, t_graph *afarm, int i, int j)
@@ -76,9 +78,7 @@ int		ft_rec_bond(t_list *list, t_graph *afarm, int i, int j)
 	char	**arr;
 
 	if (!(arr = ft_strsplit(list->content, '-')))
-		return (0);
-	i = -1;
-	j = -1;
+		return (-1);
 	while (++i < afarm->rnum)
 	{
 		if (j == -1 && (!ft_strcmp((afarm->rnames)[i], arr[0])) && (j = i) >= 0)
@@ -98,7 +98,7 @@ int		ft_rec_bond(t_list *list, t_graph *afarm, int i, int j)
 ** printf("TEST: writing to afarm %d\n", i + 1);
 */
 
-int		ft_read(t_graph *afarm, t_list *list, int i, int j)
+void	ft_read(t_graph *afarm, t_list *list, int i, int j)
 {
 	t_list	*tmp;
 
@@ -115,14 +115,14 @@ int		ft_read(t_graph *afarm, t_list *list, int i, int j)
 	{
 		if (!tmp->id)
 			(!(afarm->anum)) ? afarm->anum = ft_atoi(tmp->content)
-		: ft_free_n_exit(NULL, &list, -3);
+		: ft_free_n_exit(afarm->spine[4], NULL, &list, -3);
 		else if (tmp->id == 2)
 			(afarm->rnames)[++j] = ft_strsub(tmp->content, 0,
 				ft_strnchr(tmp->content, ft_strlen(tmp->content), ' '));
 		else if (tmp->id == 3)
-			ft_rec_bond(tmp, afarm, -1, -1);
+			(ft_rec_bond(tmp, afarm, -1, -1))
+		? ft_free_n_exit(afarm->spine[4], NULL, &list, -6) : 0;
 		tmp = tmp->next;
 	}
 	ft_lstclr(&list);
-	return (0);
 }

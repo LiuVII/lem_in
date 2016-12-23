@@ -185,6 +185,8 @@ int		ft_solve_farm(t_graph *afarm)
 		(afarm->spine[0]) ? ft_print_solution(afarm, min) : 0;
 		ft_print_steps(afarm, min + 1, 0, NULL);
 	}
+	else
+		ft_free_n_exit(afarm->spine[4], NULL, &list, -7);
 	ft_lstclr(&list);
 	return (0);
 }

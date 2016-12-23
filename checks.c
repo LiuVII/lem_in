@@ -13,6 +13,18 @@
 #include "lem_in.h"
 #include <stdio.h>
 
+int		ft_check_farm(t_graph *afarm)
+{
+	if (afarm->anum <= 0)
+		return (0);
+	if (afarm->start == afarm->finish
+		|| afarm->start == -1 || afarm->finish == -1)
+		return (0);
+	if (afarm->rnum < 3)
+		return (0);
+	return (1);
+}
+
 int		ft_isnum(const char *str)
 {
 	int			sign;
@@ -42,13 +54,12 @@ int		ft_isnum(const char *str)
 **Check if room or bond
 */
 
-int		ft_check_rnb(char *line, int i)
+int		ft_check_rnb(char *line, int i, int j)
 {
 	char	**arr;
 
 	if (!(arr = ft_strsplit(line, ' ')))
 		return (0);
-	i = 0;
 	while (arr[i])
 		i++;
 	if (i == 3 && arr[0] && ft_isnum(arr[1]) && ft_isnum(arr[2]))
@@ -57,12 +68,13 @@ int		ft_check_rnb(char *line, int i)
 		return (1);
 	}
 	ft_mapfree(&arr);
+	i = 0;
+	while (line[i])
+		if (line[i++] == '-')
+			j++;
 	if (!(arr = ft_strsplit(line, '-')))
 		return (0);
-	i = 0;
-	while (arr[i])
-		i++;
-	if (i == 2 && arr[0] && arr[1])
+	if (j == 1 && arr[0] && arr[1])
 	{
 		ft_mapfree(&arr);
 		return (-1);

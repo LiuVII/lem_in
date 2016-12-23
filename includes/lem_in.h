@@ -15,7 +15,6 @@
 # define MALLOC_G(x, y) ((!(x)) ? {return (y);} : 0)
 # define MIN(a, b) ((a < b) ? a : b)
 # define MAX(a, b) ((a > b) ? a : b)
-# define ABS(x) ((x < 0) ? -(x) : x)
 # include <stdlib.h>
 # include <limits.h>
 # include <fcntl.h>
@@ -23,6 +22,7 @@
 # include <sys/types.h>
 # include <sys/uio.h>
 # include "libft.h"
+# include "ft_printf.h"
 
 typedef struct	s_apath
 {
@@ -52,12 +52,13 @@ typedef struct	s_graph
 
 int				ft_solve_farm(t_graph *afarm);
 
-int				ft_read(t_graph *afarm, t_list *list, int i, int j);
+void			ft_read(t_graph *afarm, t_list *list, int i, int j);
 
-int				ft_check_rnb(char *line, int i);
+int				ft_check_rnb(char *line, int i, int j);
+int				ft_check_farm(t_graph *afarm);
 
 void			ft_clear_farm(t_graph *afarm);
-void			ft_free_n_exit(char *line, t_list **list, int err);
+void			ft_free_n_exit(int flag, char *line, t_list **list, int err);
 void			ft_farm_init(t_graph *afarm);
 t_list			*ft_create_lnode(int step, t_graph *afarm);
 void			ft_printsteps_prepare(t_graph *afarm);

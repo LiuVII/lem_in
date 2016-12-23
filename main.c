@@ -45,14 +45,19 @@ int	main(int argc, char const **argv)
 		return (0);
 	ft_farm_init(&afarm);
 	if (argc > 1 && ft_parse_flags(&(argv[1]), &afarm))
-		ft_free_n_exit(NULL, NULL, -1);
+		ft_free_n_exit(1, NULL, NULL, -1);
 	ft_read(&afarm, NULL, -1, -1);
-	afarm.q = (int*)malloc(sizeof(int) * afarm.rnum);
-	afarm.s = (int*)malloc(sizeof(int) * afarm.rnum);
-	afarm.aq = (int*)malloc(sizeof(int) * afarm.anum);
-	afarm.as = (int*)malloc(sizeof(int) * afarm.anum);
-	(afarm.spine[3]) ? ft_print_farm(&afarm, -1, -1) : 0;
-	ft_solve_farm(&afarm);
+	if (ft_check_farm(&afarm))
+	{
+		afarm.q = (int*)malloc(sizeof(int) * afarm.rnum);
+		afarm.s = (int*)malloc(sizeof(int) * afarm.rnum);
+		afarm.aq = (int*)malloc(sizeof(int) * afarm.anum);
+		afarm.as = (int*)malloc(sizeof(int) * afarm.anum);
+		(afarm.spine[3]) ? ft_print_farm(&afarm, -1, -1) : 0;
+		ft_solve_farm(&afarm);
+	}
+	else
+		ft_free_n_exit(afarm.spine[4], NULL, NULL, -2);
 	ft_clear_farm(&afarm);
 	return (0);
 }
